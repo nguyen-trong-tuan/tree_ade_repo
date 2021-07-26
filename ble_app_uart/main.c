@@ -74,6 +74,7 @@ static ble_uuid_t m_adv_uuids[]          =                                      
 #define TYPE_DATA   '0'
 #define TYPE_STATUS '1'
 #define ID '1' //'1','2' 
+#define ALL_ID '0'
 const int ON = 1;
 const int OFF = 0;
 char buffer[20];
@@ -188,7 +189,7 @@ void light_off(void)
 /* SEND FROM MASTER -->SLAVE: message[] = [id:'1'/'2'/....]_[content] */
 void handle_message(char mess[])
 {
-  if(mess[0] == ID)
+  if((mess[0] == ID) || (mess[0] == ALL_ID))
   {
     if(!strncmp(&mess[1],command_on,strlen(command_on)))//neu nhu cau lenh nhan duoc la lenh yeu cau bat den
     {         
