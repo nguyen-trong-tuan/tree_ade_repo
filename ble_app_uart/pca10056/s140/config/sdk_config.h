@@ -7800,7 +7800,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 4//chinh sua tu 3 thanh 3
+#define NRF_LOG_DEFAULT_LEVEL 3//chinh sua tu 3 thanh 3
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.

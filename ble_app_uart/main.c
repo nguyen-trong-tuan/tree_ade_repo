@@ -69,11 +69,11 @@ static ble_uuid_t m_adv_uuids[]          =                                      
     {BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}
 };
 
-#define PIN_CONTROL 7
+#define PIN_CONTROL 30//7, cha 7 la chan control c?a kit ADE còn chân 30 là chân control c?a m?ch nh? màu xanh
 #define LED_STATUS  6
 #define TYPE_DATA   '0'
 #define TYPE_STATUS '1'
-#define ID '1' //'1','2' 
+#define ID '3' //'1','2' 
 #define ALL_ID '0'
 const int ON = 1;
 const int OFF = 0;
@@ -90,6 +90,9 @@ char flag_status = ON;
 void pin_init(void)
 {
   nrf_gpio_cfg_output(PIN_CONTROL);
+  //mac dinh neu chua dieu khien gi thi chan nay la clear sau khi config no la output.
+  //neu la kit nho mau xanh la cay thi khong can them lenh gi, de mac dinh khi bat len la den mau do sang
+  //nrf_gpio_pin_clear(PIN_CONTROL);
   nrf_gpio_cfg_output(LED_STATUS);
 
 }
@@ -100,8 +103,10 @@ static void update_status(char status[])
   ret_code_t err_code;
   char buff_status[30] = "";
   buff_status[0] = ID;//device1,2,3,...
-  buff_status[1] = TYPE_STATUS;
-  strcpy(&buff_status[2],status);
+  buff_status[1] = ' ';
+  buff_status[2] = TYPE_STATUS;
+  buff_status[3] = ' ';
+  strcpy(&buff_status[4],status);
   NRF_LOG_INFO("update status: %s",buff_status);
   do
    {
@@ -123,8 +128,10 @@ static void update_data(char data[])
   ret_code_t err_code;
   char buff_data[30] = "";
   buff_data[0] = ID;//device1,2,...
-  buff_data[1] = TYPE_DATA;
-  strcpy(&buff_data[2],data);
+  buff_data[1] = ' ';
+  buff_data[2] = TYPE_DATA;
+  buff_data[3] = ' ';
+  strcpy(&buff_data[4],data);
   NRF_LOG_INFO("update_data: %s",buff_data);
   do
    {
@@ -165,7 +172,8 @@ void light_on(void)
   }
   else
   {
-    nrf_gpio_pin_set(PIN_CONTROL);
+    //nrf_gpio_pin_set(PIN_CONTROL);
+    nrf_gpio_pin_toggle(PIN_CONTROL);
     nrf_gpio_pin_set(LED_STATUS);
     flag_status = ON;
     update_status(status_on);
@@ -179,7 +187,8 @@ void light_off(void)
   }
   else
   {
-    nrf_gpio_pin_clear(PIN_CONTROL);
+    //nrf_gpio_pin_clear(PIN_CONTROL);
+    nrf_gpio_pin_toggle(PIN_CONTROL);
     nrf_gpio_pin_clear(LED_STATUS);
     flag_status = OFF;
     update_status(status_off);
@@ -808,6 +817,7 @@ int main(void)
     bool erase_bonds;
 
     // Initialize.
+    pin_init();
     uart_init();
     log_init();
     timers_init();
@@ -827,13 +837,14 @@ int main(void)
 
     // Enter main loop.
     nrf_delay_ms(5000);
-    char fake_data[30] = "";
-    sprintf(fake_data,"u:%3dI:%3d\r\n",220,190);
-
+    //char fake_data[30] = "U:220.00 I:15.05 X\r\n";//lenh nay la danh cho periph 2
+    char fake_data[30] = "U:215.00 I:270.17 X\r\n";
+    //sprintf(fake_data,"U:%3dI:%3d\r\n",220,190);
+    
     for (;;)
     {
         //idle_state_handle();
-      nrf_delay_ms(5000);
+      nrf_delay_ms(8000);
       update_data(fake_data);
       //nrf_delay_ms(5000);
       //update_status("test_status\r\n");      
